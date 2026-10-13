@@ -1,0 +1,19 @@
+{
+  "port": 3000,
+  "reminders": [
+    { "time": "08:00", "intervals": ["daily"], "message": "Good morning! Today's goals" },
+    { "time": "21:00", "intervals": ["daily"], "message": "Still open today" },
+    { "time": "09:00", "intervals": ["weekly"], "message": "This week's goals" }
+  ],
+  "notifications": {
+    "routes": {
+      "goal.completed": ["console"],
+      "period.started": ["console"],
+      "reminder": ["console", "whatsapp"]
+    },
+    "channels": {
+      "whatsapp": { "enabled": false, "to": "+9725XXXXXXXX", "from": "+14155238886", "accountSid": "", "authToken": "" },
+      "email": { "enabled": false, "to": "you@example.com", "smtp": { "host": "smtp.gmail.com", "port": 587, "user": "", "pass": "" } }
+    }
+  }
+}
