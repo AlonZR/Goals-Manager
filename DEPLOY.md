@@ -1,6 +1,6 @@
 # Putting Goals-Manager online
 
-You'll set up four free accounts. Each step takes a few minutes. When you're done, the app runs at an address like `https://mygoals.onrender.com`, only your Google account can sign in, and your phone and laptop see the same goals.
+You'll set up four free accounts. Each step takes a few minutes. When you're done, the app runs at an address like `https://goalsmanager.onrender.com`, only your Google account can sign in, and your phone and laptop see the same goals.
 
 | Piece | What it does | Cost |
 |---|---|---|
@@ -46,7 +46,7 @@ You'll set up four free accounts. Each step takes a few minutes. When you're don
    - `ALLOWED_EMAILS` → `alonzr98@gmail.com`
    - `DATABASE_URL` → the Neon connection string from step 2
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` → type `pending` for now. You'll fill them in after step 4.
-4. Click **Apply**. When the service appears, note its address, e.g. `https://mygoals.onrender.com`. Yours may have extra letters if the name is taken.
+4. Click **Apply**. When the service appears, note its address, e.g. `https://goalsmanager.onrender.com`. Yours may have extra letters if the name is taken.
 
 The first start will fail with "Google sign-in is enabled but ..." or a Google error. That's expected until step 4 is done.
 
@@ -60,7 +60,7 @@ The first start will fail with "Google sign-in is enabled but ..." or a Google e
 3. Go to **Credentials** (or **Clients**) and choose **Create credentials → OAuth client ID**.
    - **Application type:** **Web application**
    - **Authorized redirect URIs:** your Render address + `/auth/google/callback`, e.g.
-     `https://mygoals.onrender.com/auth/google/callback`
+     `https://goalsmanager.onrender.com/auth/google/callback`
    - Click **Create** and copy the **Client ID** and **Client secret**.
 4. Back in Render, open **mygoals → Environment** and replace the two `pending` values with the real Client ID and Client secret. Then click **Save, rebuild and deploy**.
 

@@ -3,7 +3,7 @@
 //
 // Env:
 //   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET  from Google Cloud Console (OAuth client, type "Web application")
-//   BASE_URL         public address, e.g. https://mygoals.onrender.com  (redirect URI = BASE_URL/auth/google/callback)
+//   BASE_URL         public address, e.g. https://goalsmanager.onrender.com  (redirect URI = BASE_URL/auth/google/callback)
 //                    — on Render this defaults to RENDER_EXTERNAL_URL automatically
 //   REQUIRE_AUTH     "true" = refuse to start without Google sign-in configured (set online)
 //   ALLOWED_EMAILS   comma-separated Google accounts allowed in

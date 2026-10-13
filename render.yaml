@@ -2,7 +2,7 @@
 # Render dashboard → New → Blueprint → pick this repository.
 services:
   - type: web
-    name: mygoals
+    name: goalsmanager
     runtime: node
     plan: free            # change to "starter" later for always-on (no sleep)
     region: frankfurt     # closest to Israel; pick the same region for the Neon database
