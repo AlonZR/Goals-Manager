@@ -28,6 +28,7 @@
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
+    if (res.status === 401) { location.href = '/login.html'; throw new Error('Signed out'); }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     return data;
@@ -340,6 +341,56 @@
     const c = ['#7c5cff', '#e85d8f', '#2f9e8f', '#3b82f6', '#e89b2f', '#8bbf3a', '#d95cd0', '#5c7cff'];
     return c[Math.floor(Math.random() * c.length)];
   }
+
+  // ---------- "⋯" menu: backup & account ----------
+  let me = { authEnabled: false, email: null };
+  api('GET', '/api/me').then((m) => { me = m; }).catch(() => {});
+
+  $('#moreBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (document.querySelector('.move-menu')) return closeMenus();
+    const menu = document.createElement('div');
+    menu.className = 'move-menu';
+    const compact = getComputedStyle($('#toggleDone')).display === 'none';
+    menu.innerHTML = `
+      ${compact ? `<div class="menu-label">View</div>
+      <button data-do="desc">${ui.showDesc ? '✓ ' : ''}Show details</button>
+      <button data-do="done">${ui.hideDone ? '✓ ' : ''}Hide done</button><hr>` : ''}
+      <div class="menu-label">Backup</div>
+      <button data-do="export">⬇ Download backup</button>
+      <button data-do="import">⬆ Restore from backup…</button>
+      ${me.authEnabled ? `<hr><div class="menu-label menu-email">${esc(me.email || '')}</div><button data-do="logout">Sign out</button>` : ''}`;
+    document.body.appendChild(menu);
+    const a = e.currentTarget.getBoundingClientRect();
+    menu.style.top = `${a.bottom + 6}px`;
+    menu.style.left = `${Math.max(8, a.right - menu.offsetWidth)}px`;
+    menu.addEventListener('click', (ev) => {
+      const b = ev.target.closest('button');
+      if (!b) return;
+      ev.stopPropagation();
+      closeMenus();
+      if (b.dataset.do === 'desc') $('#toggleDesc').click();
+      if (b.dataset.do === 'done') $('#toggleDone').click();
+      if (b.dataset.do === 'export') location.href = '/api/export';
+      if (b.dataset.do === 'import') $('#importFile').click();
+      if (b.dataset.do === 'logout') location.href = '/auth/logout';
+    });
+  });
+
+  $('#importFile').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    let data;
+    try { data = JSON.parse(await file.text()); } catch { return toast('That file is not a valid backup'); }
+    const n = Array.isArray(data.goals) ? data.goals.length : 0;
+    if (!confirm(`Replace ALL current goals with this backup (${n} goals)?`)) return;
+    try {
+      const r = await api('POST', '/api/import', data);
+      toast(`Restored ${r.goals} goals in ${r.subjects} subjects`);
+    } catch (err) { toast(err.message); }
+    await load();
+  });
 
   // ---------- toast ----------
   let toastTimer;

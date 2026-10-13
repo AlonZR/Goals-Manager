@@ -4,7 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Goals</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%237c5cff' stroke-width='10'/><circle cx='50' cy='50' r='24' fill='none' stroke='%237c5cff' stroke-width='10'/><circle cx='50' cy='50' r='6' fill='%237c5cff'/></svg>">
+  <link rel="icon" href="/icon-192.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#7c5cff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Goals">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -17,6 +22,8 @@
       <button class="btn ghost" id="toggleDesc" title="Show / hide descriptions under all goals">Show details</button>
       <button class="btn ghost" id="toggleDone" title="Show / hide completed goals">Hide done</button>
       <button class="btn primary" id="addSubject">+ Subject</button>
+      <button class="btn ghost icon-only" id="moreBtn" aria-label="More" title="Backup &amp; account">⋯</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
     </div>
   </header>
 

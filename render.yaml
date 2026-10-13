@@ -1,0 +1,28 @@
+# Render Blueprint — creates the MyGoals web service.
+# Render dashboard → New → Blueprint → pick this repository.
+services:
+  - type: web
+    name: mygoals
+    runtime: node
+    plan: free            # change to "starter" later for always-on (no sleep)
+    region: frankfurt     # closest to Israel; pick the same region for the Neon database
+    buildCommand: npm ci
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: TZ
+        value: Asia/Jerusalem   # days/weeks roll over at local midnight
+      - key: REQUIRE_AUTH
+        value: "true"           # never start without Google sign-in
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ALLOWED_EMAILS
+        sync: false             # your Google address(es), comma-separated
+      - key: DATABASE_URL
+        sync: false             # Neon connection string
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false

@@ -62,6 +62,9 @@ function listChannels() {
 async function handleInbound(name, body) {
   const ch = channels[name];
   if (!ch || !ch.handleInbound) { const e = new Error('Channel has no inbound handler'); e.status = 404; throw e; }
+  // Webhooks are reachable without signing in, so only accept them for an enabled channel.
+  // When implementing one, also verify the provider's request signature in its handleInbound().
+  if (!isActive(name)) { const e = new Error('Channel not enabled'); e.status = 404; throw e; }
   return ch.handleInbound(body, { store, config: cfgFor(name) });
 }
 

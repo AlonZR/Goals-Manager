@@ -1,15 +1,11 @@
-// Data store backed by a single JSON file (data/goals.json).
-// All reads/writes go through this module, so swapping to SQLite or a cloud
-// database later only means re-implementing these functions.
+// Data store. All reads/writes of goals and subjects go through this module.
+// The state is kept in memory and persisted via ./persistence (a JSON file
+// locally, Postgres online).
 
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
 const bus = require('./events');
+const persistence = require('./persistence');
 const { INTERVALS, periodKey, currentPeriods, streak } = require('./periods');
-
-const DATA_DIR = process.env.MYGOALS_DATA_DIR || path.join(__dirname, '..', 'data');
-const DATA_FILE = path.join(DATA_DIR, 'goals.json');
 
 const DEFAULT_SUBJECTS = [
   { name: 'Personal', color: '#7c5cff' },
@@ -24,28 +20,61 @@ const now = () => new Date().toISOString();
 
 let db = null;
 
-function load() {
-  if (db) return db;
-  if (fs.existsSync(DATA_FILE)) {
-    db = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-  } else {
-    db = {
-      version: 1,
-      subjects: DEFAULT_SUBJECTS.map((s, i) => ({ id: id(), ...s, order: i, createdAt: now() })),
-      goals: [],
-      meta: { lastPeriods: currentPeriods() },
-    };
-    save();
-  }
+function freshState() {
+  return {
+    version: 1,
+    subjects: DEFAULT_SUBJECTS.map((s, i) => ({ id: id(), ...s, order: i, createdAt: now() })),
+    goals: [],
+    meta: { lastPeriods: currentPeriods() },
+  };
+}
+
+function adopt(data) {
+  db = data || freshState();
   db.meta = db.meta || { lastPeriods: currentPeriods() };
+  if (!data) save();
   return db;
 }
 
+// Must be awaited once at startup when using a database.
+async function init() {
+  return adopt(await persistence.read());
+}
+
+function load() {
+  if (db) return db;
+  if (!persistence.readSync) throw new Error('store.init() must be awaited before use');
+  return adopt(persistence.readSync());
+}
+
 function save() {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-  const tmp = DATA_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
-  fs.renameSync(tmp, DATA_FILE); // atomic replace, no half-written file
+  persistence.write(db);
+}
+
+const flush = () => persistence.flush();
+
+// ---------- backup / restore ----------
+
+function exportData() {
+  load();
+  return { ...db, exportedAt: now() };
+}
+
+function importData(data) {
+  if (!data || !Array.isArray(data.subjects) || !Array.isArray(data.goals)) {
+    throw badRequest('Not a MyGoals backup file (missing subjects/goals)');
+  }
+  const ids = new Set(data.subjects.map((s) => s.id));
+  if (data.goals.some((g) => !ids.has(g.subjectId) || !INTERVALS.includes(g.interval) || !g.title)) {
+    throw badRequest('Backup file has invalid goals');
+  }
+  const { exportedAt, ...clean } = data;
+  db = clean;
+  db.version = db.version || 1;
+  db.meta = db.meta || { lastPeriods: currentPeriods() };
+  save();
+  refreshPeriods(); // roll anything that is now in the past
+  return { subjects: db.subjects.length, goals: db.goals.length };
 }
 
 // ---------- period maintenance ----------
@@ -264,6 +293,7 @@ function allGoals() { load(); return db.goals; }
 function allSubjects() { load(); return db.subjects; }
 
 module.exports = {
+  init, flush, exportData, importData,
   getState, getArchive, refreshPeriods,
   createSubject, updateSubject, deleteSubject,
   createGoal, updateGoal, toggleGoal, deleteGoal, restoreGoal,
