@@ -1,4 +1,4 @@
-# My Goals
+# Goals-Manager
 
 Personal goal tracker: each **subject** (Personal, Relationship, Education, Work, House, …) has its own table with **Daily / Weekly / Monthly / Yearly** columns.
 

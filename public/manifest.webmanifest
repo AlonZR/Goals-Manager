@@ -1,6 +1,6 @@
 {
-  "name": "My Goals",
-  "short_name": "Goals",
+  "name": "Goals-Manager",
+  "short_name": "Goals-Manager",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f5f8",

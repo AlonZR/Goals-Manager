@@ -1,4 +1,4 @@
-# Putting My Goals online
+# Putting Goals-Manager online
 
 You'll set up four free accounts. Each step takes a few minutes. When you're done, the app runs at an address like `https://mygoals.onrender.com`, only your Google account can sign in, and your phone and laptop see the same goals.
 
@@ -54,7 +54,7 @@ The first start will fail with "Google sign-in is enabled but ..." or a Google e
 
 1. Go to <https://console.cloud.google.com/> and create a new project called `MyGoals`.
 2. Open **APIs & Services → OAuth consent screen**. In newer consoles this is called **Google Auth Platform**.
-   - **App name:** `My Goals`. **User support email:** your Gmail.
+   - **App name:** `Goals-Manager`. **User support email:** your Gmail.
    - **Audience / User type:** **External**.
    - Leave it in **Testing** mode and add **alonzr98@gmail.com** as a **test user**. Testing mode is fine for personal use, and only listed test users can sign in.
 3. Go to **Credentials** (or **Clients**) and choose **Create credentials → OAuth client ID**.
